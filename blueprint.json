@@ -5,10 +5,15 @@
 		"author": "camaleaun",
 		"description": "Event thumbnails for WordPress meetups made of core blocks: no speaker, one or two speakers, with or without sponsors. 1280 x 720 on desktop, 4:5 on phones."
 	},
-	"landingPage": "/",
-	"preferredVersions": { "php": "8.3", "wp": "latest" },
+	"landingPage": "/simple/",
+	"preferredVersions": {
+		"php": "8.3",
+		"wp": "latest"
+	},
 	"steps": [
-		{ "step": "login" },
+		{
+			"step": "login"
+		},
 		{
 			"step": "installPlugin",
 			"pluginData": {
@@ -18,8 +23,14 @@
 				"refType": "branch",
 				"path": "meetup-thumbnail-generator"
 			},
-			"options": { "activate": true, "targetFolderName": "meetup-thumbnail-generator" }
+			"options": {
+				"activate": true,
+				"targetFolderName": "meetup-thumbnail-generator"
+			}
 		},
-		{ "step": "runPHP", "code": "<?php require '/wordpress/wp-load.php'; mtg_install_demo();" }
+		{
+			"step": "runPHP",
+			"code": "<?php require '/wordpress/wp-load.php'; mtg_install_demo();"
+		}
 	]
 }

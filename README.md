@@ -4,18 +4,23 @@ Event thumbnails for WordPress meetups, made of core blocks and edited in the bl
 
 **[Open in WordPress Playground →](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/camaleaun/meetup-thumbnail-generator/main/blueprint.json)**
 
-The home page lists six thumbnails. Open one, then edit it to change the texts, photos and logos:
+The link opens the **simple** thumbnail: the talk title, the speaker and a watermark at the bottom right (WordPress.org by default, at 50%; replace it with your group's logo). The home page shows a miniature of every thumbnail, with links to open and edit each one:
 
 | | With sponsors | No sponsors |
 | --- | --- | --- |
+| **Simple** (title and speaker) | | `/simple/` (with watermark), `/simple-no-watermark/` |
 | **One speaker** | `/one-speaker-sponsors/` | `/one-speaker/` |
 | **Two speakers** | `/two-speakers-sponsors/` | `/two-speakers/` |
 | **No speaker** | `/no-speaker-sponsors/` | `/no-speaker/` |
+
+![Home with the miniatures](shots/home.png)
 
 Each page is two pieces in one, by the window width:
 
 - **Event thumbnail (16:9):** 1280 × 720 from 576px up.
 - **Instagram post (4:5):** below 576px; at 360 × 450 with device pixel ratio 3 it is 1080 × 1350.
+
+![Simple, with watermark](shots/simple-1280x720.png)
 
 ![One speaker, with sponsors](shots/one-speaker-sponsors-1280x720.png)
 
@@ -25,10 +30,7 @@ Each page is two pieces in one, by the window width:
 
 ## Export
 
-In Chrome DevTools, turn on the device toolbar and set the size, then run "Capture screenshot" from the command menu:
-
-- 1280 × 720, device pixel ratio 1: event thumbnail.
-- 360 × 450, device pixel ratio 3: Instagram post.
+Each thumbnail page has two buttons at the top right: **PNG 1280 × 720** (event thumbnail) and **PNG 1080 × 1350** (Instagram post). Each size is drawn in a hidden frame of that width (so the 16:9 or the 4:5 layout applies) and saved with [html-to-image](https://github.com/bubkoo/html-to-image) (MIT, bundled in `assets/vendor/`).
 
 ## How it works
 
@@ -44,4 +46,4 @@ Made for [WordPress Joinville](https://events.wordpress.org/group/wp-joinville/)
 
 ## License
 
-Code: GPL-2.0-or-later. Fonts: SIL Open Font License 1.1 (see `assets/fonts/`). The WordPress logo is a trademark of the WordPress Foundation.
+Code: GPL-2.0-or-later. html-to-image: MIT. Fonts: SIL Open Font License 1.1 (see `assets/fonts/`). The WordPress logo is a trademark of the WordPress Foundation.

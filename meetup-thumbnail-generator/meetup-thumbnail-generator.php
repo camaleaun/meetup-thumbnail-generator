@@ -21,10 +21,15 @@ const MTG_VERSION = '0.1.0';
 /**
  * The variations: number of speakers and whether the sponsors row is shown.
  *
- * @return array<string, array{title: string, speakers: int, sponsors: bool}>
+ * The simple layout has only the title and the speaker, plus an optional
+ * watermark image in the bottom-right corner (WordPress.org by default).
+ *
+ * @return array<string, array{title: string, speakers: int, sponsors: bool, layout?: string, watermark?: bool}>
  */
 function mtg_variations() {
 	return array(
+		'simple'                => array( 'title' => 'Simple: title and speaker, with watermark', 'speakers' => 1, 'sponsors' => false, 'layout' => 'simple', 'watermark' => true ),
+		'simple-no-watermark'   => array( 'title' => 'Simple: title and speaker', 'speakers' => 1, 'sponsors' => false, 'layout' => 'simple', 'watermark' => false ),
 		'one-speaker-sponsors'  => array( 'title' => 'One speaker, with sponsors', 'speakers' => 1, 'sponsors' => true ),
 		'one-speaker'           => array( 'title' => 'One speaker, no sponsors', 'speakers' => 1, 'sponsors' => false ),
 		'two-speakers-sponsors' => array( 'title' => 'Two speakers, with sponsors', 'speakers' => 2, 'sponsors' => true ),
@@ -97,6 +102,51 @@ function mtg_image( $class_name, $file, $alt ) {
 function mtg_heading( $class_name, $html, $level = 1 ) {
 	$attrs = 2 === $level ? array( 'className' => $class_name ) : array( 'level' => $level, 'className' => $class_name );
 	return '<!-- wp:heading' . mtg_attrs( $attrs ) . " -->\n<h$level class=\"wp-block-heading $class_name\">$html</h$level>\n<!-- /wp:heading -->\n";
+}
+
+/**
+ * The simple thumbnail: title box on top, speaker at the bottom left and,
+ * optionally, a watermark image at the bottom right over the dot grid.
+ *
+ * @param bool $watermark Whether to show the watermark image.
+ * @return string
+ */
+function mtg_simple_markup( $watermark ) {
+	$bottom = array(
+		mtg_group(
+			'mtg-guest',
+			array(
+				mtg_image( 'mtg-avatar', 'speaker.jpg', 'Photo of Speaker Name' ),
+				mtg_paragraph( 'mtg-guest-name', 'Speaker Name' ),
+			)
+		),
+	);
+	if ( $watermark ) {
+		$bottom[] = mtg_image( 'mtg-watermark', 'wordpress-org.png', 'WordPress.org' );
+	}
+
+	return mtg_group(
+		'mtg-thumb mtg-thumb-simple',
+		array(
+			mtg_group( 'mtg-title-box', array( mtg_heading( 'mtg-title', 'Your talk title goes here, in up to two lines' ) ) ),
+			mtg_group( 'mtg-simple-bottom', $bottom ),
+		),
+		'div',
+		array( 'templateLock' => 'contentOnly' )
+	);
+}
+
+/**
+ * Markup for a variation.
+ *
+ * @param array $variation Variation from mtg_variations().
+ * @return string
+ */
+function mtg_variation_markup( array $variation ) {
+	if ( isset( $variation['layout'] ) && 'simple' === $variation['layout'] ) {
+		return mtg_simple_markup( ! empty( $variation['watermark'] ) );
+	}
+	return mtg_thumbnail_markup( $variation['speakers'], $variation['sponsors'] );
 }
 
 /**
@@ -207,6 +257,63 @@ function mtg_enqueue_assets() {
 add_action( 'enqueue_block_assets', 'mtg_enqueue_assets' );
 
 /**
+ * Whether the current request is a page with the thumbnail template.
+ *
+ * @return bool
+ */
+function mtg_is_thumbnail_page() {
+	return is_page() && 'meetup-thumbnail' === get_page_template_slug( get_queried_object_id() );
+}
+
+/**
+ * "Save PNG" buttons on thumbnail pages (html-to-image, MIT).
+ */
+function mtg_enqueue_export() {
+	if ( ! mtg_is_thumbnail_page() ) {
+		return;
+	}
+	wp_enqueue_script( 'html-to-image', plugins_url( 'assets/vendor/html-to-image.js', __FILE__ ), array(), '1.11.13', array( 'in_footer' => true ) );
+	wp_enqueue_script( 'meetup-thumbnail-generator-export', plugins_url( 'assets/export.js', __FILE__ ), array( 'html-to-image' ), MTG_VERSION, array( 'in_footer' => true ) );
+}
+add_action( 'wp_enqueue_scripts', 'mtg_enqueue_export' );
+
+/**
+ * [meetup_thumbnails]: a miniature of each variation (16:9 and 4:5, live
+ * pages in scaled iframes), with links to open and edit it.
+ *
+ * @return string
+ */
+function mtg_gallery_shortcode() {
+	$cards = '';
+	foreach ( mtg_variations() as $slug => $variation ) {
+		$page = get_page_by_path( $slug );
+		if ( ! $page ) {
+			continue;
+		}
+		$url    = get_permalink( $page );
+		$minis  = '';
+		foreach ( array( 'desktop' => array( 1280, 720 ), 'mobile' => array( 360, 450 ) ) as $type => $size ) {
+			$minis .= sprintf(
+				'<div class="mtg-mini mtg-mini-%1$s"><iframe src="%2$s" width="%3$d" height="%4$d" loading="lazy" tabindex="-1" aria-hidden="true" title=""></iframe></div>',
+				$type,
+				esc_url( $url ),
+				$size[0],
+				$size[1]
+			);
+		}
+		$cards .= sprintf(
+			'<article class="mtg-card"><a class="mtg-card-minis" href="%1$s">%2$s</a><h3 class="mtg-card-title"><a href="%1$s">%3$s</a></h3><p class="mtg-card-links"><a href="%1$s">Open</a> · <a href="%4$s">Edit</a></p></article>',
+			esc_url( $url ),
+			$minis,
+			esc_html( $variation['title'] ),
+			esc_url( get_edit_post_link( $page ) ?? admin_url( 'post.php?post=' . $page->ID . '&action=edit' ) )
+		);
+	}
+	return '<div class="mtg-gallery">' . $cards . '</div>';
+}
+add_shortcode( 'meetup_thumbnails', 'mtg_gallery_shortcode' );
+
+/**
  * Patterns (one per variation) and the template that shows only the page
  * content: no header, footer or admin bar.
  */
@@ -219,7 +326,7 @@ function mtg_register() {
 			array(
 				'title'      => 'Meetup thumbnail: ' . $variation['title'],
 				'categories' => array( 'meetup-thumbnail' ),
-				'content'    => mtg_thumbnail_markup( $variation['speakers'], $variation['sponsors'] ),
+				'content'    => mtg_variation_markup( $variation ),
 			)
 		);
 	}
@@ -243,28 +350,23 @@ add_action( 'init', 'mtg_register' );
  * home page that lists them. Used by the Playground blueprint.
  */
 function mtg_install_demo() {
-	$items = '';
 	foreach ( mtg_variations() as $slug => $variation ) {
 		$existing = get_page_by_path( $slug );
 		$id       = $existing ? $existing->ID : wp_insert_post(
 			array(
-				'post_type'    => 'page',
-				'post_status'  => 'publish',
-				'post_name'    => $slug,
-				'post_title'   => $variation['title'],
-				'post_content' => mtg_thumbnail_markup( $variation['speakers'], $variation['sponsors'] ),
+				'post_type'     => 'page',
+				'post_status'   => 'publish',
+				'post_name'     => $slug,
+				'post_title'    => $variation['title'],
+				'post_content'  => mtg_variation_markup( $variation ),
 				'page_template' => 'meetup-thumbnail',
 			)
 		);
 		update_post_meta( $id, '_wp_page_template', 'meetup-thumbnail' );
-		$items .= '<li><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( $variation['title'] ) . '</a> · <a href="' . esc_url( admin_url( 'post.php?post=' . $id . '&action=edit' ) ) . '">edit</a></li>';
 	}
 
-	$home = '<!-- wp:heading -->' . "\n" . '<h2 class="wp-block-heading">Pick a thumbnail</h2>' . "\n" . '<!-- /wp:heading -->' . "\n\n"
-		. '<!-- wp:paragraph -->' . "\n" . '<p>Each page is one event thumbnail made of core blocks. Open it, then edit it to change the texts, photos and logos.</p>' . "\n" . '<!-- /wp:paragraph -->' . "\n\n"
-		. '<!-- wp:list -->' . "\n" . '<ul class="wp-block-list">' . str_replace( array( '<li>', '</li>' ), array( "<!-- wp:list-item -->\n<li>", "</li>\n<!-- /wp:list-item -->\n" ), $items ) . '</ul>' . "\n" . '<!-- /wp:list -->' . "\n\n"
-		. '<!-- wp:heading {"level":3} -->' . "\n" . '<h3 class="wp-block-heading">Export</h3>' . "\n" . '<!-- /wp:heading -->' . "\n\n"
-		. '<!-- wp:list -->' . "\n" . '<ul class="wp-block-list"><!-- wp:list-item -->' . "\n" . '<li><strong>Event thumbnail (16:9):</strong> browser DevTools, device toolbar at 1280 × 720, then "Capture screenshot".</li>' . "\n" . '<!-- /wp:list-item -->' . "\n\n" . '<!-- wp:list-item -->' . "\n" . '<li><strong>Instagram post (4:5):</strong> 360 × 450 with device pixel ratio 3, for 1080 × 1350.</li>' . "\n" . '<!-- /wp:list-item --></ul>' . "\n" . '<!-- /wp:list -->';
+	$home = '<!-- wp:paragraph -->' . "\n" . '<p>Event thumbnails made of core blocks. Open one to see it and save it as PNG (1280 × 720 for the event, 1080 × 1350 for an Instagram post), or edit it to change the texts, photos and logos.</p>' . "\n" . '<!-- /wp:paragraph -->' . "\n\n"
+		. '<!-- wp:group {"align":"wide","layout":{"type":"default"}} -->' . "\n" . '<div class="wp-block-group alignwide"><!-- wp:shortcode -->' . "\n" . '[meetup_thumbnails]' . "\n" . '<!-- /wp:shortcode --></div>' . "\n" . '<!-- /wp:group -->';
 
 	$home_page = get_page_by_path( 'thumbnail-generator' );
 	$home_id   = $home_page ? $home_page->ID : wp_insert_post(
