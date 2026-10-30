@@ -94,8 +94,9 @@ function mtg_image( $class_name, $file, $alt ) {
  * @param string $html       Content.
  * @return string
  */
-function mtg_heading( $class_name, $html ) {
-	return '<!-- wp:heading' . mtg_attrs( array( 'level' => 1, 'className' => $class_name ) ) . " -->\n<h1 class=\"wp-block-heading $class_name\">$html</h1>\n<!-- /wp:heading -->\n";
+function mtg_heading( $class_name, $html, $level = 1 ) {
+	$attrs = 2 === $level ? array( 'className' => $class_name ) : array( 'level' => $level, 'className' => $class_name );
+	return '<!-- wp:heading' . mtg_attrs( $attrs ) . " -->\n<h$level class=\"wp-block-heading $class_name\">$html</h$level>\n<!-- /wp:heading -->\n";
 }
 
 /**
@@ -107,21 +108,25 @@ function mtg_heading( $class_name, $html ) {
  * @return string
  */
 function mtg_thumbnail_markup( $speakers, $sponsors ) {
-	$guests = array();
-	$names  = array( 'Speaker Name', 'Second Speaker' );
-	for ( $i = 0; $i < $speakers; $i++ ) {
-		$guests[] = mtg_group(
+	$details = array();
+	if ( 1 === $speakers ) {
+		$details[] = mtg_group(
 			'mtg-guest',
 			array(
-				mtg_image( 'mtg-avatar', 0 === $i ? 'speaker.jpg' : 'speaker-2.jpg', 'Photo of ' . $names[ $i ] ),
-				mtg_paragraph( 'mtg-guest-name', $names[ $i ] ),
+				mtg_image( 'mtg-avatar', 'speaker.jpg', 'Photo of Speaker Name' ),
+				mtg_paragraph( 'mtg-guest-name', 'Speaker Name' ),
 			)
 		);
-	}
-
-	$details = array();
-	if ( $guests ) {
-		$details[] = mtg_group( 'mtg-guests', $guests );
+	} elseif ( 2 === $speakers ) {
+		// Two talks: the photos partly overlap below the box, and each talk
+		// title with its speaker goes in the box, one above the other.
+		$details[] = mtg_group(
+			'mtg-avatars',
+			array(
+				mtg_image( 'mtg-avatar', 'speaker.jpg', 'Photo of First Speaker' ),
+				mtg_image( 'mtg-avatar', 'speaker-2.jpg', 'Photo of Second Speaker' ),
+			)
+		);
 	}
 	$details[] = mtg_paragraph( 'mtg-description', 'Venue: <strong>Venue name</strong><br>Street address, 123<br>City - State' );
 
@@ -138,7 +143,22 @@ function mtg_thumbnail_markup( $speakers, $sponsors ) {
 	}
 	$bottom[] = mtg_paragraph( 'mtg-signup', 'Free registration' );
 
-	$title = $speakers ? 'Your talk title goes here, in up to two lines' : 'Meetup night: networking and lightning talks';
+	if ( 2 === $speakers ) {
+		$talks = array();
+		foreach ( array( array( 'First talk title goes here', 'First Speaker' ), array( 'Second talk title goes here', 'Second Speaker' ) ) as $talk ) {
+			$talks[] = mtg_group(
+				'mtg-talk',
+				array(
+					mtg_heading( 'mtg-talk-title', $talk[0], 2 ),
+					mtg_paragraph( 'mtg-talk-speaker', $talk[1] ),
+				)
+			);
+		}
+		$title_box = mtg_group( 'mtg-title-box', array( mtg_group( 'mtg-talks', $talks ) ) );
+	} else {
+		$title     = $speakers ? 'Your talk title goes here, in up to two lines' : 'Meetup night: networking and lightning talks';
+		$title_box = mtg_group( 'mtg-title-box', array( mtg_heading( 'mtg-title', $title ) ) );
+	}
 
 	return mtg_group(
 		'mtg-thumb',
@@ -169,7 +189,7 @@ function mtg_thumbnail_markup( $speakers, $sponsors ) {
 				),
 				'header'
 			),
-			mtg_group( 'mtg-title-box', array( mtg_heading( 'mtg-title', $title ) ) ),
+			$title_box,
 			mtg_group( 'mtg-details', $details ),
 			mtg_group( 'mtg-bottom', $bottom ),
 		),

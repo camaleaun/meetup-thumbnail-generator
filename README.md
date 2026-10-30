@@ -19,7 +19,9 @@ Each page is two pieces in one, by the window width:
 
 ![One speaker, with sponsors](shots/one-speaker-sponsors-1280x720.png)
 
-<img src="shots/one-speaker-sponsors-1080x1350.png" width="270" alt="The same thumbnail as a 4:5 post"> <img src="shots/two-speakers-1080x1350.png" width="270" alt="Two speakers, no sponsors, as a 4:5 post"> <img src="shots/no-speaker-sponsors-1080x1350.png" width="270" alt="No speaker, with sponsors, as a 4:5 post">
+![Two speakers, with sponsors](shots/two-speakers-sponsors-1280x720.png)
+
+<img src="shots/one-speaker-sponsors-1080x1350.png" width="270" alt="The same thumbnail as a 4:5 post"> <img src="shots/two-speakers-sponsors-1080x1350.png" width="270" alt="Two talks with overlapping photos, as a 4:5 post"> <img src="shots/no-speaker-sponsors-1080x1350.png" width="270" alt="No speaker, with sponsors, as a 4:5 post">
 
 ## Export
 
@@ -34,7 +36,7 @@ The plugin in [`meetup-thumbnail-generator/`](meetup-thumbnail-generator/):
 
 - registers one block pattern per variation (category "Meetup thumbnail"), with the layout locked so only the content is edited (`templateLock: contentOnly`);
 - registers the "Meetup thumbnail" page template: only the page content, without header, footer or admin bar;
-- loads one stylesheet (`assets/style.css`) on the front end and in the editor, with Inter, EB Garamond and IBM Plex Mono bundled. A second speaker makes both speakers smaller (`:has()`), and the call to action stays on the right when there are no sponsors.
+- loads one stylesheet (`assets/style.css`) on the front end and in the editor, with Inter, EB Garamond and IBM Plex Mono bundled. With two speakers, the box holds both talks (title and speaker, one above the other) and the two photos partly overlap below it; without sponsors, the call to action stays on the right.
 
 [`blueprint.json`](blueprint.json) installs the plugin from this repository and creates the pages (`mtg_install_demo()`).
 

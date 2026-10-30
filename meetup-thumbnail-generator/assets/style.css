@@ -209,14 +209,6 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 	margin-top: auto;
 }
 
-/* One or two speakers (a second .mtg-guest makes both smaller). */
-.mtg-thumb .mtg-guests {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 1rem clamp(1rem, 3.125vw, 2.5rem);
-}
-
 .mtg-thumb .mtg-guest {
 	display: flex;
 	align-items: center;
@@ -238,13 +230,49 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 	letter-spacing: normal;
 }
 
-.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-avatar img {
-	width: clamp(3rem, 6.875vw, 88px);
-	height: clamp(3rem, 6.875vw, 88px);
+/* Two talks: each title with its speaker in the box, one above the other
+   (clear of the inserter on the right), and the two photos partly
+   overlapping below, the second one over the first with a ring in the
+   background color. */
+.mtg-thumb .mtg-talks {
+	display: flex;
+	flex-direction: column;
+	grid-area: 1 / 1;
+	gap: clamp(.75rem, 1.5625vw, 1.25rem);
+	padding: clamp(.5rem, 1.25vw, 1rem) clamp(2rem, 4.6875vw, 3.75rem) 0 clamp(.25rem, .625vw, .5rem);
 }
 
-.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest-name {
-	font-size: clamp(1.25rem, 2.8125vw, 2.25rem);
+.mtg-thumb .mtg-talk {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(.125rem, .3125vw, .25rem);
+}
+
+.mtg-thumb .mtg-talk-title {
+	font: 500 clamp(1.25rem, 3.4375vw, 2.75rem)/1.2 "MTG Inter", sans-serif;
+	letter-spacing: normal;
+	color: inherit;
+}
+
+.mtg-thumb .mtg-talk-speaker {
+	font: italic 400 clamp(1rem, 2.5vw, 2rem)/1.1 "MTG EB Garamond", serif;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-avatars {
+	--size: clamp(3.5rem, 8.125vw, 104px);
+	display: flex;
+	align-items: center;
+}
+
+.mtg-thumb .mtg-avatars .mtg-avatar img {
+	width: var(--size);
+	height: var(--size);
+	box-shadow: 0 0 0 clamp(3px, .46875vw, 6px) #eff2ff;
+}
+
+.mtg-thumb .mtg-avatars .mtg-avatar + .mtg-avatar {
+	margin-left: calc(-.3 * var(--size));
 }
 
 /* "Local: " then the address lines under the name (hanging indent of 7
@@ -416,15 +444,11 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 		border-radius: calc(2.67 * var(--u));
 	}
 
-	.mtg-thumb .mtg-guests {
+	.mtg-thumb .mtg-guest,
+	.mtg-thumb .mtg-avatars {
 		grid-area: guest;
-		flex-wrap: nowrap;
 		gap: calc(12 * var(--u));
 		margin-top: calc(12 * var(--u));
-	}
-
-	.mtg-thumb .mtg-guest {
-		gap: calc(12 * var(--u));
 	}
 
 	.mtg-thumb .mtg-avatar img {
@@ -438,19 +462,31 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 		font-size: calc(23 * var(--u));
 	}
 
-	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest {
-		flex: 1;
-		gap: calc(8 * var(--u));
+	.mtg-thumb .mtg-avatars {
+		--size: calc(52 * var(--u));
+		gap: 0;
 	}
 
-	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-avatar img {
-		width: calc(40 * var(--u));
-		height: calc(40 * var(--u));
+	.mtg-thumb .mtg-avatars .mtg-avatar img {
+		box-shadow: 0 0 0 calc(2.5 * var(--u)) #eff2ff;
 	}
 
-	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest-name {
+	.mtg-thumb .mtg-talks {
+		gap: calc(10 * var(--u));
+		padding: 0 calc(20 * var(--u)) 0 0;
+	}
+
+	.mtg-thumb .mtg-talk {
+		gap: calc(2 * var(--u));
+	}
+
+	.mtg-thumb .mtg-talk-title {
 		font-size: calc(17 * var(--u));
-		line-height: 1.05;
+		line-height: calc(21 * var(--u));
+	}
+
+	.mtg-thumb .mtg-talk-speaker {
+		font-size: calc(14 * var(--u));
 	}
 
 	.mtg-thumb .mtg-description {
