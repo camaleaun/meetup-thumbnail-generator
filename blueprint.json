@@ -1,0 +1,25 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Meetup Thumbnail Generator",
+		"author": "camaleaun",
+		"description": "Event thumbnails for WordPress meetups made of core blocks: no speaker, one or two speakers, with or without sponsors. 1280 x 720 on desktop, 4:5 on phones."
+	},
+	"landingPage": "/",
+	"preferredVersions": { "php": "8.3", "wp": "latest" },
+	"steps": [
+		{ "step": "login" },
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "git:directory",
+				"url": "https://github.com/camaleaun/meetup-thumbnail-generator",
+				"ref": "main",
+				"refType": "branch",
+				"path": "meetup-thumbnail-generator"
+			},
+			"options": { "activate": true, "targetFolderName": "meetup-thumbnail-generator" }
+		},
+		{ "step": "runPHP", "code": "<?php require '/wordpress/wp-load.php'; mtg_install_demo();" }
+	]
+}

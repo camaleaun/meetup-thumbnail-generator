@@ -1,0 +1,470 @@
+/* Meetup Thumbnail Generator: the event thumbnail made of core blocks.
+   From 576px up it is the 1280 x 720 piece (16:9), below that a 4:5 post
+   (360 x 450 at 360px wide, 1080 x 1350 at 3x). Every size is fluid and
+   reaches its design value at 1280px (desktop) or 360px (phones). */
+
+@font-face {
+	font-family: "MTG Inter";
+	src: url("fonts/Inter-latin.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: "MTG EB Garamond";
+	src: url("fonts/EBGaramond-Italic-400-latin.woff2") format("woff2");
+	font-weight: 400;
+	font-style: italic;
+	font-display: block;
+}
+
+@font-face {
+	font-family: "MTG IBM Plex Mono";
+	src: url("fonts/IBMPlexMono-400-latin.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: "MTG IBM Plex Mono";
+	src: url("fonts/IBMPlexMono-600-latin.woff2") format("woff2");
+	font-weight: 600;
+	font-style: normal;
+	font-display: block;
+}
+
+@font-face {
+	font-family: "MTG IBM Plex Mono";
+	src: url("fonts/IBMPlexMono-400-italic-latin.woff2") format("woff2");
+	font-weight: 400;
+	font-style: italic;
+	font-display: block;
+}
+
+/* Page with the wj-thumbnail template: no admin bar, no site padding. */
+html:has(.mtg-thumb-page) {
+	margin-top: 0 !important;
+}
+
+body:has(.mtg-thumb-page) {
+	background: #eff2ff;
+}
+
+body:has(.mtg-thumb-page) #wpadminbar {
+	display: none;
+}
+
+body:has(.mtg-thumb-page) .wp-site-blocks {
+	padding: 0;
+}
+
+.mtg-thumb.mtg-thumb,
+.mtg-thumb.mtg-thumb * {
+	box-sizing: border-box;
+	margin: 0;
+	/* The theme balances headings; the piece wraps like the HTML. */
+	text-wrap: wrap;
+}
+
+.mtg-thumb.mtg-thumb {
+	display: flex;
+	flex-direction: column;
+	max-width: none;
+	padding: clamp(1rem, 6.25vw, 5rem) clamp(1rem, 6.25vw, 5rem) clamp(1rem, 4.765625vw, 3.8125rem);
+	background:
+		linear-gradient(151.0892deg, #eff2ff 53.22102%, rgb(239 242 255 / 0) 89.19535%),
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45' width='45' height='45'%3E%3Ccircle cx='2.5' cy='2.5' r='2.5' fill='%233858e9' fill-opacity='.9'/%3E%3C/svg%3E") -20px 5px,
+		#eff2ff;
+	color: #1e1e1e;
+	-webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 576px) and (max-width: 1280px) {
+	.mtg-thumb.mtg-thumb {
+		aspect-ratio: 16 / 9;
+	}
+}
+
+/* Header: brand on the left, date and time toolbar on the right. */
+.mtg-thumb .mtg-thumb-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: clamp(1rem, 2.34375vw, 1.875rem);
+}
+
+.mtg-thumb .mtg-brand {
+	display: flex;
+	align-items: center;
+	gap: clamp(1rem, 2.8125vw, 2.25rem);
+}
+
+.mtg-thumb .mtg-logo img {
+	display: block;
+	width: clamp(3rem, 7.5vw, 96px);
+	height: clamp(3rem, 7.5vw, 96px);
+}
+
+.mtg-thumb .mtg-type {
+	font: 700 clamp(1rem, 2.34375vw, 1.875rem)/clamp(1.25rem, 3.125vw, 2.5rem) "MTG Inter", sans-serif;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-type-light {
+	font-weight: 400;
+}
+
+/* Block toolbar drawn at 2x, with a calendar before the date and a clock
+   before the time (@wordpress/icons). */
+.mtg-thumb .mtg-toolbar {
+	display: flex;
+	margin-left: auto;
+	background: #fff;
+	border: clamp(1px, .15625vw, 2px) solid #1e1e1e;
+	border-radius: clamp(.125rem, .3125vw, .25rem);
+}
+
+.mtg-thumb .mtg-date,
+.mtg-thumb .mtg-time {
+	display: flex;
+	align-items: center;
+	gap: clamp(.125rem, .3125vw, .25rem);
+	min-height: clamp(2.875rem, 7.1875vw, 5.75rem);
+	padding: 0 clamp(.5625rem, 1.40625vw, 1.125rem);
+	font: 700 clamp(1rem, 2.5vw, 2rem)/clamp(1.28125rem, 3.203125vw, 2.5625rem) "MTG Inter", sans-serif;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-time {
+	line-height: clamp(1.3125rem, 3.28125vw, 2.625rem);
+}
+
+.mtg-thumb .mtg-date {
+	border-right: clamp(1px, .15625vw, 2px) solid #1e1e1e;
+}
+
+.mtg-thumb .mtg-date::before,
+.mtg-thumb .mtg-time::before {
+	content: "";
+	flex: none;
+	width: clamp(1.5rem, 3.75vw, 3rem);
+	aspect-ratio: 1;
+	background: currentColor;
+	-webkit-mask: var(--mtg-icon) center / contain no-repeat;
+	mask: var(--mtg-icon) center / contain no-repeat;
+}
+
+.mtg-thumb .mtg-date::before {
+	--mtg-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm.5 16c0 .3-.2.5-.5.5H5c-.3 0-.5-.2-.5-.5V7h15v12zM9 10H7v2h2v-2zm0 4H7v2h2v-2zm4-4h-2v2h2v-2zm4 0h-2v2h2v-2zm-4 4h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E");
+}
+
+.mtg-thumb .mtg-time::before {
+	--mtg-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 18.5a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13ZM4 12a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm9 1V8h-1.5v3.5h-2V13H13Z'/%3E%3C/svg%3E");
+}
+
+/* Selected heading block: blue outline, inserter in the bottom-right corner. */
+.mtg-thumb .mtg-title-box {
+	--pad: .4375rem;
+	--border: clamp(1.5px, .234375vw, 3px);
+	display: grid;
+	margin: clamp(1rem, 2.34375vw, 1.875rem) 0 clamp(1rem, 1.875vw, 1.5rem);
+	padding: 0 var(--pad) var(--pad);
+	border: var(--border) solid #3858e9;
+	border-radius: clamp(.625rem, 1.5625vw, 1.25rem);
+}
+
+.mtg-thumb .mtg-title {
+	grid-area: 1 / 1;
+	margin-top: -.1875rem;
+	font: 500 clamp(1.75rem, 5.625vw, 4.5rem)/clamp(2.28125rem, 7.34375vw, 5.875rem) "MTG Inter", sans-serif;
+	letter-spacing: normal;
+	color: inherit;
+}
+
+.mtg-thumb .mtg-title-box::after {
+	content: "";
+	box-sizing: border-box;
+	grid-area: 1 / 1;
+	justify-self: end;
+	align-self: end;
+	width: clamp(2rem, 4.6875vw, 3.75rem);
+	height: clamp(2rem, 4.6875vw, 3.75rem);
+	/* Its corner sits on the box's outer corner: back over padding + border. */
+	margin: 0 calc(-1 * (var(--pad) + var(--border))) calc(-1 * (var(--pad) + var(--border))) 0;
+	padding: clamp(.5rem, 1.171875vw, .9375rem);
+	background: #1e1e1e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='1155 359 28.75 28.75'%3E%3Cpath fill='%23fff' d='M1167.5 375.25V387.75H1171.25V375.25H1183.75V371.5H1171.25V359H1167.5V371.5H1155V375.25H1167.5Z'/%3E%3C/svg%3E") content-box border-box center / contain no-repeat;
+	border-radius: clamp(.1875rem, .390625vw, .3125rem);
+}
+
+/* Below the title: the speaker on the left, the venue in mono. */
+.mtg-thumb .mtg-details {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem 2.5rem;
+	margin-top: auto;
+}
+
+/* One or two speakers (a second .mtg-guest makes both smaller). */
+.mtg-thumb .mtg-guests {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem clamp(1rem, 3.125vw, 2.5rem);
+}
+
+.mtg-thumb .mtg-guest {
+	display: flex;
+	align-items: center;
+	gap: clamp(1rem, 1.875vw, 1.5rem);
+}
+
+.mtg-thumb .mtg-avatar img {
+	display: block;
+	width: clamp(4rem, 9.375vw, 7.5rem);
+	height: clamp(4rem, 9.375vw, 7.5rem);
+	border-radius: 50%;
+	outline: clamp(1.5px, .234375vw, 3px) solid #1e1e1e;
+	outline-offset: calc(-1 * clamp(1.5px, .234375vw, 3px));
+	object-fit: cover;
+}
+
+.mtg-thumb .mtg-guest-name {
+	font: italic 400 clamp(1.5rem, 3.4375vw, 2.75rem)/1 "MTG EB Garamond", serif;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-avatar img {
+	width: clamp(3rem, 6.875vw, 88px);
+	height: clamp(3rem, 6.875vw, 88px);
+}
+
+.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest-name {
+	font-size: clamp(1.25rem, 2.8125vw, 2.25rem);
+}
+
+/* "Local: " then the address lines under the name (hanging indent of 7
+   characters, the width of "Local: " in mono). */
+.mtg-thumb .mtg-description {
+	padding-left: 7ch;
+	text-indent: -7ch;
+	font: 400 clamp(.75rem, 1.71875vw, 1.375rem)/clamp(1rem, 2.1875vw, 1.75rem) "MTG IBM Plex Mono", monospace;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-description strong {
+	font-weight: 600;
+}
+
+/* Bottom row: sponsors on the left, "Inscrição gratuita" on the right. */
+.mtg-thumb .mtg-bottom {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: clamp(1rem, 1.875vw, 1.5rem);
+}
+
+.mtg-thumb .mtg-sponsors {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: clamp(1rem, 3.125vw, 2.5rem);
+}
+
+.mtg-thumb .mtg-sponsors-label {
+	font: 400 clamp(.75rem, 1.71875vw, 1.375rem)/clamp(1rem, 2.1875vw, 1.75rem) "MTG IBM Plex Mono", monospace;
+	letter-spacing: normal;
+}
+
+.mtg-thumb .mtg-sponsor img {
+	display: block;
+	width: clamp(7.5rem, 15.625vw, 200px);
+	height: clamp(1.6875rem, 3.515625vw, 45px);
+	object-fit: contain;
+}
+
+.mtg-thumb .mtg-sponsor.is-tall img {
+	height: clamp(2.5rem, 5.234375vw, 67px);
+}
+
+/* Without sponsors, the call stays on the right. */
+.mtg-thumb .mtg-signup {
+	margin-left: auto;
+	font: 700 clamp(1rem, 2.1875vw, 1.75rem)/1 "MTG Inter", sans-serif;
+	letter-spacing: .075em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+/* Phones: a 4:5 post (360 x 450 at 360px wide), every size in 1/360 of the
+   width (--u). */
+@media (max-width: 575.98px) {
+	.mtg-thumb.mtg-thumb {
+		--u: calc(100vw / 360);
+		display: grid;
+		grid-template-columns: auto 1fr;
+		grid-template-rows: auto auto auto auto auto 1fr;
+		grid-template-areas:
+			"brand brand"
+			"toolbar sponsors"
+			"title title"
+			"guest guest"
+			"description description"
+			"signup signup";
+		aspect-ratio: 4 / 5;
+		padding: calc(20 * var(--u)) calc(36 * var(--u)) calc(22 * var(--u));
+		background-position: 0 0, calc(6 * var(--u)) calc(9 * var(--u)), 0 0;
+		background-size: auto, calc(21.667 * var(--u)) calc(21.667 * var(--u)), auto;
+	}
+
+	.mtg-thumb .mtg-thumb-header,
+	.mtg-thumb .mtg-details,
+	.mtg-thumb .mtg-bottom {
+		display: contents;
+	}
+
+	.mtg-thumb .mtg-brand {
+		grid-area: brand;
+		gap: calc(12 * var(--u));
+	}
+
+	.mtg-thumb .mtg-logo img {
+		width: calc(48 * var(--u));
+		height: calc(48 * var(--u));
+	}
+
+	.mtg-thumb .mtg-type {
+		font-size: calc(14 * var(--u));
+		line-height: calc(18 * var(--u));
+	}
+
+	.mtg-thumb .mtg-toolbar {
+		grid-area: toolbar;
+		align-self: center;
+		margin: calc(14 * var(--u)) 0 0;
+		border-width: 1px;
+		border-radius: calc(2 * var(--u));
+	}
+
+	.mtg-thumb .mtg-date,
+	.mtg-thumb .mtg-time {
+		gap: calc(3 * var(--u));
+		min-height: calc(26 * var(--u));
+		padding: 0 calc(5 * var(--u));
+		font-size: calc(10.5 * var(--u));
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.mtg-thumb .mtg-date {
+		border-right-width: 1px;
+	}
+
+	.mtg-thumb .mtg-date::before,
+	.mtg-thumb .mtg-time::before {
+		width: calc(13 * var(--u));
+	}
+
+	.mtg-thumb .mtg-sponsors {
+		grid-area: sponsors;
+		justify-self: end;
+		flex-wrap: nowrap;
+		gap: calc(6 * var(--u));
+		margin: calc(14 * var(--u)) 0 0 calc(8 * var(--u));
+	}
+
+	.mtg-thumb .mtg-sponsors-label {
+		font-size: calc(7.7 * var(--u));
+		line-height: 1;
+	}
+
+	.mtg-thumb .mtg-sponsor img {
+		width: calc(46 * var(--u));
+		height: calc(10.35 * var(--u));
+	}
+
+	.mtg-thumb .mtg-sponsor.is-tall img {
+		height: calc(15.4 * var(--u));
+	}
+
+	.mtg-thumb .mtg-title-box {
+		--pad: calc(16 * var(--u));
+		--border: 1px;
+		grid-area: title;
+		margin: calc(14 * var(--u)) 0 0;
+		padding: calc(12 * var(--u)) var(--pad) var(--pad);
+		border-radius: calc(6.67 * var(--u));
+	}
+
+	.mtg-thumb .mtg-title {
+		align-self: start;
+		margin: 0;
+		font-size: calc(25.3 * var(--u));
+		line-height: calc(31.5 * var(--u));
+	}
+
+	.mtg-thumb .mtg-title-box::after {
+		width: calc(20 * var(--u));
+		height: calc(20 * var(--u));
+		padding: calc(5 * var(--u));
+		border-radius: calc(2.67 * var(--u));
+	}
+
+	.mtg-thumb .mtg-guests {
+		grid-area: guest;
+		flex-wrap: nowrap;
+		gap: calc(12 * var(--u));
+		margin-top: calc(12 * var(--u));
+	}
+
+	.mtg-thumb .mtg-guest {
+		gap: calc(12 * var(--u));
+	}
+
+	.mtg-thumb .mtg-avatar img {
+		width: calc(56 * var(--u));
+		height: calc(56 * var(--u));
+		outline-width: 1.5px;
+		outline-offset: -1.5px;
+	}
+
+	.mtg-thumb .mtg-guest-name {
+		font-size: calc(23 * var(--u));
+	}
+
+	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest {
+		flex: 1;
+		gap: calc(8 * var(--u));
+	}
+
+	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-avatar img {
+		width: calc(40 * var(--u));
+		height: calc(40 * var(--u));
+	}
+
+	.mtg-thumb .mtg-guests:has(> .mtg-guest + .mtg-guest) .mtg-guest-name {
+		font-size: calc(17 * var(--u));
+		line-height: 1.05;
+	}
+
+	.mtg-thumb .mtg-description {
+		grid-area: description;
+		margin-top: calc(16 * var(--u));
+		font-size: calc(9.5 * var(--u));
+		line-height: calc(12.5 * var(--u));
+	}
+
+	.mtg-thumb .mtg-signup {
+		grid-area: signup;
+		align-self: end;
+		justify-self: center;
+		margin-left: 0;
+		font-size: calc(16 * var(--u));
+	}
+}
