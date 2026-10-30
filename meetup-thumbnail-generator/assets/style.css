@@ -231,15 +231,15 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 }
 
 /* Two talks: each title with its speaker in the box, one above the other
-   (clear of the inserter on the right), and the two photos partly
-   overlapping below, the second one over the first with a ring in the
-   background color. */
+   (clear of the inserter on the right), and the photos below in a row,
+   each one 1/8 over the next and the first on top, as in the Figma
+   "Text serif + Guests" thumbnail (120px photos 105px apart). */
 .mtg-thumb .mtg-talks {
 	display: flex;
 	flex-direction: column;
 	grid-area: 1 / 1;
-	gap: clamp(.75rem, 1.5625vw, 1.25rem);
-	padding: clamp(.5rem, 1.25vw, 1rem) clamp(2rem, 4.6875vw, 3.75rem) 0 clamp(.25rem, .625vw, .5rem);
+	gap: clamp(.5rem, .9375vw, .75rem);
+	padding: clamp(.375rem, .78125vw, .625rem) clamp(2rem, 4.6875vw, 3.75rem) 0 clamp(.25rem, .625vw, .5rem);
 }
 
 .mtg-thumb .mtg-talk {
@@ -249,7 +249,7 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 }
 
 .mtg-thumb .mtg-talk-title {
-	font: 500 clamp(1.25rem, 3.4375vw, 2.75rem)/1.2 "MTG Inter", sans-serif;
+	font: 500 clamp(1.25rem, 3.4375vw, 2.75rem)/1.15 "MTG Inter", sans-serif;
 	letter-spacing: normal;
 	color: inherit;
 }
@@ -260,19 +260,30 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 }
 
 .mtg-thumb .mtg-avatars {
-	--size: clamp(3.5rem, 8.125vw, 104px);
+	--size: clamp(4rem, 9.375vw, 7.5rem);
 	display: flex;
 	align-items: center;
+}
+
+.mtg-thumb .mtg-avatars .mtg-avatar {
+	position: relative;
+}
+
+.mtg-thumb .mtg-avatars .mtg-avatar:nth-child(1) {
+	z-index: 3;
+}
+
+.mtg-thumb .mtg-avatars .mtg-avatar:nth-child(2) {
+	z-index: 2;
 }
 
 .mtg-thumb .mtg-avatars .mtg-avatar img {
 	width: var(--size);
 	height: var(--size);
-	box-shadow: 0 0 0 clamp(3px, .46875vw, 6px) #eff2ff;
 }
 
 .mtg-thumb .mtg-avatars .mtg-avatar + .mtg-avatar {
-	margin-left: calc(-.3 * var(--size));
+	margin-left: calc(-.125 * var(--size));
 }
 
 /* "Local: " then the address lines under the name (hanging indent of 7
@@ -463,12 +474,8 @@ body:has(.mtg-thumb-page) .wp-site-blocks {
 	}
 
 	.mtg-thumb .mtg-avatars {
-		--size: calc(52 * var(--u));
+		--size: calc(56 * var(--u));
 		gap: 0;
-	}
-
-	.mtg-thumb .mtg-avatars .mtg-avatar img {
-		box-shadow: 0 0 0 calc(2.5 * var(--u)) #eff2ff;
 	}
 
 	.mtg-thumb .mtg-talks {
